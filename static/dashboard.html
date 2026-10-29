@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>LearnIQ — Teacher Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+  <style>
+    :root {
+      --primary:   #5C6BC0;
+      --primary-d: #3949AB;
+      --accent:    #7E57C2;
+      --success:   #26A69A;
+      --danger:    #EF5350;
+      --warn:      #FFA726;
+      --bg:        #F0F2FF;
+      --sidebar:   #1E1F4B;
+      --card:      #FFFFFF;
+      --text:      #1A1D3B;
+      --muted:     #8892A4;
+      --border:    #E8EBF7;
+      --radius:    16px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body  { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* ── Topnav ──────────────────────────────────────── */
+    .topnav {
+      background: var(--sidebar); padding: 0 36px; height: 62px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 16px rgba(0,0,0,.18);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+    .brand-name { font-size: 1.1rem; font-weight: 800; color: #fff; }
+    .brand-tag  { font-size: .65rem; background: rgba(255,255,255,.12); color: rgba(255,255,255,.7);
+                  padding: 2px 9px; border-radius: 99px; margin-left: 8px; font-weight: 600; letter-spacing: .5px; }
+    .nav-right  { display: flex; align-items: center; gap: 12px; }
+    .btn-nav {
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 16px; border-radius: 9px; font-size: .8rem; font-weight: 600;
+      text-decoration: none; font-family: inherit; cursor: pointer; transition: background .2s;
+    }
+    .btn-nav-ghost { background: rgba(255,255,255,.08); color: rgba(255,255,255,.8); border: 1px solid rgba(255,255,255,.12); }
+    .btn-nav-ghost:hover { background: rgba(255,255,255,.15); color: #fff; }
+    .btn-nav-primary { background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; border: none; }
+    .btn-nav-primary:hover { opacity: .9; }
+
+    /* ── Page body ───────────────────────────────────── */
+    .page { max-width: 1280px; margin: 0 auto; padding: 36px 32px; }
+    .page-title { font-size: 1.6rem; font-weight: 800; margin-bottom: 4px; }
+    .page-sub   { color: var(--muted); font-size: .9rem; margin-bottom: 28px; }
+
+    /* ── KPI cards ───────────────────────────────────── */
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+    .kpi-card {
+      background: var(--card); border-radius: var(--radius); padding: 22px 24px;
+      box-shadow: 0 2px 16px rgba(92,107,192,.08);
+      display: flex; align-items: flex-start; gap: 16px;
+      border-top: 3px solid transparent;
+    }
+    .kpi-icon {
+      width: 46px; height: 46px; border-radius: 13px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+    }
+    .kpi-val  { font-size: 1.8rem; font-weight: 800; line-height: 1; }
+    .kpi-lbl  { font-size: .78rem; color: var(--muted); font-weight: 500; margin-top: 4px; }
+    .kpi-sub  { font-size: .72rem; margin-top: 6px; font-weight: 600; }
+    .k-blue   { border-top-color: var(--primary); }
+    .k-green  { border-top-color: var(--success); }
+    .k-orange { border-top-color: var(--warn);    }
+    .k-red    { border-top-color: var(--danger);  }
+    .i-blue   { background: #E8EAF6; color: var(--primary); }
+    .i-green  { background: #E8F5E9; color: #2E7D32; }
+    .i-orange { background: #FFF3E0; color: #E65100; }
+    .i-red    { background: #FFF0F0; color: var(--danger); }
+    .t-blue   { color: var(--primary); }
+    .t-green  { color: var(--success); }
+    .t-orange { color: var(--warn); }
+    .t-red    { color: var(--danger); }
+
+    /* ── Section cards ───────────────────────────────── */
+    .section-card {
+      background: var(--card); border-radius: var(--radius); padding: 24px 28px;
+      box-shadow: 0 2px 16px rgba(92,107,192,.07); margin-bottom: 24px;
+    }
+    .section-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .section-title { font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .section-icon  { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: .9rem; }
+    .section-count { font-size: .75rem; background: var(--bg); color: var(--muted); border-radius: 99px; padding: 2px 10px; font-weight: 600; }
+
+    /* ── Heatmap table ───────────────────────────────── */
+    .heatmap-table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+    .heatmap-table th {
+      padding: 10px 14px; background: var(--bg); font-weight: 700; font-size: .75rem;
+      letter-spacing: .5px; text-transform: uppercase; color: var(--muted);
+      border-bottom: 2px solid var(--border); white-space: nowrap; text-align: center;
+    }
+    .heatmap-table th:first-child { text-align: left; }
+    .heatmap-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); text-align: center; }
+    .heatmap-table td:first-child { text-align: left; font-weight: 600; white-space: nowrap; }
+    .heatmap-table tbody tr:hover { background: #FAFBFF; }
+    .heatmap-table tbody tr:last-child td { border-bottom: none; }
+
+    .heat-cell {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 56px; height: 28px; border-radius: 8px; font-weight: 700; font-size: .78rem;
+    }
+    .heat-none   { background: var(--bg); color: var(--muted); }
+    .heat-low    { background: #FFF0F0; color: #C62828; }
+    .heat-medium { background: #FFF8E1; color: #E65100; }
+    .heat-high   { background: #E8F5E9; color: #2E7D32; }
+
+    /* ── Stats table ─────────────────────────────────── */
+    .data-table { width: 100%; border-collapse: collapse; font-size: .83rem; }
+    .data-table th {
+      padding: 10px 14px; background: var(--bg); font-weight: 700; font-size: .72rem;
+      letter-spacing: .5px; text-transform: uppercase; color: var(--muted);
+      border-bottom: 2px solid var(--border); white-space: nowrap;
+    }
+    .data-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .data-table tbody tr:hover { background: #FAFBFF; }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+
+    .score-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px; border-radius: 99px; font-size: .76rem; font-weight: 700;
+    }
+    .pill-low    { background: #FFF0F0; color: #C62828; }
+    .pill-medium { background: #FFF8E1; color: #E65100; }
+    .pill-high   { background: #E8F5E9; color: #2E7D32; }
+
+    .topic-tag {
+      display: inline-block; padding: 3px 10px; border-radius: 99px;
+      font-size: .72rem; font-weight: 600; background: #E8EAF6; color: var(--primary);
+    }
+    .diff-stars { color: var(--warn); letter-spacing: -2px; }
+
+    .student-avatar {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 26px; height: 26px; border-radius: 99px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff; font-size: .7rem; font-weight: 700; margin-right: 8px; flex-shrink: 0;
+    }
+    .student-cell { display: flex; align-items: center; }
+
+    /* attempt dot */
+    .result-dot { width: 8px; height: 8px; border-radius: 99px; display: inline-block; margin-right: 6px; }
+    .dot-high   { background: var(--success); }
+    .dot-medium { background: var(--warn); }
+    .dot-low    { background: var(--danger); }
+
+    /* skeleton loader */
+    .skeleton { background: linear-gradient(90deg, var(--bg) 25%, #e2e5f3 50%, var(--bg) 75%); background-size: 200% 100%; animation: shimmer 1.2s infinite; border-radius: 8px; }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+
+    @media (max-width: 900px) {
+      .kpi-grid { grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 540px) {
+      .kpi-grid { grid-template-columns: 1fr; }
+      .page { padding: 20px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ TOPNAV ════════════════════════════════════════════════ -->
+<nav class="topnav">
+  <div class="brand">
+    <div class="brand-icon">🧠</div>
+    <span class="brand-name">LearnIQ</span>
+    <span class="brand-tag">TEACHER VIEW</span>
+  </div>
+  <div class="nav-right">
+    <a href="/" class="btn-nav btn-nav-ghost"><i class="bi bi-person-fill"></i> Student View</a>
+    <button class="btn-nav btn-nav-primary" onclick="loadDashboard()"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
+  </div>
+</nav>
+
+<!-- ══ PAGE ══════════════════════════════════════════════════ -->
+<div class="page">
+
+  <div class="page-title">Class Dashboard</div>
+  <div class="page-sub">Live overview of student progress, mastery levels and recent activity</div>
+
+  <!-- KPI row -->
+  <div class="kpi-grid">
+    <div class="kpi-card k-blue">
+      <div class="kpi-icon i-blue"><i class="bi bi-people-fill"></i></div>
+      <div>
+        <div class="kpi-val" id="s-students">—</div>
+        <div class="kpi-lbl">Total Students</div>
+        <div class="kpi-sub t-blue" id="s-topics">— topics</div>
+      </div>
+    </div>
+    <div class="kpi-card k-green">
+      <div class="kpi-icon i-green"><i class="bi bi-check2-all"></i></div>
+      <div>
+        <div class="kpi-val" id="s-attempts">—</div>
+        <div class="kpi-lbl">Total Attempts</div>
+        <div class="kpi-sub t-green" id="s-avg-score">Avg score —</div>
+      </div>
+    </div>
+    <div class="kpi-card k-orange">
+      <div class="kpi-icon i-orange"><i class="bi bi-graph-up-arrow"></i></div>
+      <div>
+        <div class="kpi-val" id="s-best-topic">—</div>
+        <div class="kpi-lbl">Strongest Topic</div>
+        <div class="kpi-sub t-orange" id="s-best-pct"></div>
+      </div>
+    </div>
+    <div class="kpi-card k-red">
+      <div class="kpi-icon i-red"><i class="bi bi-exclamation-triangle-fill"></i></div>
+      <div>
+        <div class="kpi-val" id="s-weak-topic">—</div>
+        <div class="kpi-lbl">Needs Attention</div>
+        <div class="kpi-sub t-red" id="s-weak-pct"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mastery heatmap -->
+  <div class="section-card">
+    <div class="section-head">
+      <div class="section-title">
+        <div class="section-icon" style="background:#E8EAF6;color:var(--primary)"><i class="bi bi-grid-3x3"></i></div>
+        Mastery Heatmap
+      </div>
+      <span class="section-count" id="heatmap-count"></span>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="heatmap-table">
+        <thead><tr id="mastery-head"></tr></thead>
+        <tbody id="mastery-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Two-column: stats + recent -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:0">
+
+    <!-- Per-student stats -->
+    <div class="section-card" style="margin-bottom:0">
+      <div class="section-head">
+        <div class="section-title">
+          <div class="section-icon" style="background:#E8F5E9;color:#2E7D32"><i class="bi bi-bar-chart-fill"></i></div>
+          Topic Statistics
+        </div>
+      </div>
+      <div style="overflow-x:auto;max-height:480px;overflow-y:auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Topic</th>
+              <th>Attempts</th>
+              <th>Avg Score</th>
+            </tr>
+          </thead>
+          <tbody id="stats-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Recent attempts -->
+    <div class="section-card" style="margin-bottom:0">
+      <div class="section-head">
+        <div class="section-title">
+          <div class="section-icon" style="background:#FFF3E0;color:#E65100"><i class="bi bi-clock-history"></i></div>
+          Recent Attempts
+        </div>
+        <span class="section-count">Last 50</span>
+      </div>
+      <div style="overflow-x:auto;max-height:480px;overflow-y:auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Topic</th>
+              <th>Diff</th>
+              <th>Score</th>
+              <th>When</th>
+            </tr>
+          </thead>
+          <tbody id="recent-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- /page -->
+
+<script>
+function scoreClass(v) {
+  if (v === null || v === undefined) return '';
+  if (v < 0.4) return 'low';
+  if (v < 0.7) return 'medium';
+  return 'high';
+}
+
+function heatCell(v) {
+  if (v === null || v === undefined) return `<span class="heat-cell heat-none">—</span>`;
+  const pct = Math.round(v * 100);
+  const cls = pct < 40 ? 'heat-low' : pct < 70 ? 'heat-medium' : 'heat-high';
+  return `<span class="heat-cell ${cls}">${pct}%</span>`;
+}
+
+function scorePill(v) {
+  if (v === null || v === undefined) return '—';
+  const pct = Math.round(v * 100);
+  const cls = pct < 40 ? 'pill-low' : pct < 70 ? 'pill-medium' : 'pill-high';
+  const dot = pct < 40 ? 'dot-low' : pct < 70 ? 'dot-medium' : 'dot-high';
+  return `<span class="score-pill ${cls}"><span class="result-dot ${dot}"></span>${pct}%</span>`;
+}
+
+function initials(name) {
+  return name.split(' ').slice(0,2).map(p => p[0]).join('').toUpperCase();
+}
+
+function timeAgo(dateStr) {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1)  return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24)  return `${hrs}h ago`;
+  return new Date(dateStr).toLocaleDateString();
+}
+
+const stars = n => '★'.repeat(n) + '☆'.repeat(5 - n);
+
+async function loadDashboard() {
+  const data = await fetch('/api/dashboard').then(r => r.json());
+
+  // ── KPI calculations ────────────────────────────────────────
+  const studentIds  = [...new Set(data.stats.map(r => r.student_id))];
+  const topicIds    = [...new Set(data.stats.map(r => r.topic_id))];
+  const totalAttempts = data.stats.reduce((s, r) => s + r.total_attempts, 0);
+  const allScores   = data.stats.map(r => parseFloat(r.avg_score)).filter(v => !isNaN(v));
+  const overallAvg  = allScores.length ? allScores.reduce((a,b)=>a+b,0)/allScores.length : 0;
+
+  // Best & worst topics by average mastery
+  const topicMastery = {};
+  data.mastery.forEach(r => {
+    if (!topicMastery[r.topic_name]) topicMastery[r.topic_name] = [];
+    topicMastery[r.topic_name].push(parseFloat(r.mastery_score));
+  });
+  let bestTopic = '—', bestVal = 0, weakTopic = '—', weakVal = 1;
+  Object.entries(topicMastery).forEach(([t, vals]) => {
+    const avg = vals.reduce((a,b)=>a+b,0)/vals.length;
+    if (avg > bestVal) { bestVal = avg; bestTopic = t; }
+    if (avg < weakVal) { weakVal = avg; weakTopic = t; }
+  });
+
+  document.getElementById('s-students').textContent  = studentIds.length;
+  document.getElementById('s-topics').textContent    = `${topicIds.length} topics tracked`;
+  document.getElementById('s-attempts').textContent  = totalAttempts.toLocaleString();
+  document.getElementById('s-avg-score').textContent = `Class avg ${Math.round(overallAvg*100)}%`;
+  document.getElementById('s-best-topic').textContent = bestTopic;
+  document.getElementById('s-best-pct').textContent  = `${Math.round(bestVal*100)}% avg mastery`;
+  document.getElementById('s-weak-topic').textContent = weakTopic;
+  document.getElementById('s-weak-pct').textContent  = `${Math.round(weakVal*100)}% avg mastery`;
+
+  // ── Mastery heatmap ─────────────────────────────────────────
+  const sNames = {}, matrix = {};
+  const topics  = [...new Set(data.mastery.map(r => r.topic_name))].sort();
+
+  data.mastery.forEach(r => {
+    sNames[r.student_id] = r.student_name;
+    if (!matrix[r.student_id]) matrix[r.student_id] = {};
+    matrix[r.student_id][r.topic_name] = parseFloat(r.mastery_score);
+  });
+
+  document.getElementById('heatmap-count').textContent =
+    `${Object.keys(matrix).length} students × ${topics.length} topics`;
+
+  document.getElementById('mastery-head').innerHTML =
+    '<th>Student</th>' + topics.map(t => `<th>${t}</th>`).join('');
+
+  document.getElementById('mastery-body').innerHTML = Object.entries(matrix).map(([sid, tmap]) => {
+    const cells = topics.map(t => `<td>${heatCell(tmap[t])}</td>`).join('');
+    return `<tr>
+      <td><div class="student-cell">
+        <span class="student-avatar">${initials(sNames[sid])}</span>${sNames[sid]}
+      </div></td>${cells}
+    </tr>`;
+  }).join('');
+
+  // ── Stats table ─────────────────────────────────────────────
+  document.getElementById('stats-body').innerHTML = data.stats.map(r => `
+    <tr>
+      <td><div class="student-cell">
+        <span class="student-avatar">${initials(r.student_name)}</span>${r.student_name.split(' ')[0]}
+      </div></td>
+      <td><span class="topic-tag">${r.topic_name}</span></td>
+      <td style="font-weight:700">${r.total_attempts}</td>
+      <td>${scorePill(parseFloat(r.avg_score))}</td>
+    </tr>`).join('');
+
+  // ── Recent attempts ─────────────────────────────────────────
+  document.getElementById('recent-body').innerHTML = data.recent.map(r => `
+    <tr>
+      <td><div class="student-cell">
+        <span class="student-avatar">${initials(r.student_name)}</span>${r.student_name.split(' ')[0]}
+      </div></td>
+      <td><span class="topic-tag">${r.topic_name}</span></td>
+      <td><span class="diff-stars">${stars(r.difficulty)}</span></td>
+      <td>${scorePill(r.score)}</td>
+      <td style="color:var(--muted);font-size:.75rem;white-space:nowrap">${timeAgo(r.attempted_at)}</td>
+    </tr>`).join('');
+}
+
+loadDashboard();
+</script>
+</body>
+</html>
